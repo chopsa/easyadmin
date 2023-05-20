@@ -100,6 +100,15 @@
     "doctrine/sql-formatter": {
         "version": "1.1.2"
     },
+    "easycorp/easyadmin-bundle": {
+        "version": "4.6",
+        "recipe": {
+            "repo": "github.com/symfony/recipes",
+            "branch": "main",
+            "version": "3.0",
+            "ref": "b131e6cbfe1b898a508987851963fff485986285"
+        }
+    },
     "fakerphp/faker": {
         "version": "v1.17.0"
     },
@@ -253,6 +262,9 @@
             ".env"
         ]
     },
+    "symfony/form": {
+        "version": "v6.0.19"
+    },
     "symfony/framework-bundle": {
         "version": "6.0",
         "recipe": {
@@ -284,6 +296,9 @@
     "symfony/inflector": {
         "version": "v5.1.2"
     },
+    "symfony/intl": {
+        "version": "v6.0.19"
+    },
     "symfony/maker-bundle": {
         "version": "1.0",
         "recipe": {
@@ -311,6 +326,9 @@
             "config/packages/test/monolog.yaml"
         ]
     },
+    "symfony/options-resolver": {
+        "version": "v6.0.19"
+    },
     "symfony/orm-pack": {
         "version": "v2.0.0"
     },
@@ -319,6 +337,9 @@
     },
     "symfony/polyfill-intl-grapheme": {
         "version": "v1.23.1"
+    },
+    "symfony/polyfill-intl-icu": {
+        "version": "v1.27.0"
     },
     "symfony/polyfill-intl-normalizer": {
         "version": "v1.23.0"
@@ -334,6 +355,9 @@
     },
     "symfony/polyfill-php81": {
         "version": "v1.23.0"
+    },
+    "symfony/polyfill-uuid": {
+        "version": "v1.27.0"
     },
     "symfony/property-access": {
         "version": "v6.0.0"
@@ -420,6 +444,18 @@
         "files": [
             "config/packages/twig.yaml",
             "templates/base.html.twig"
+        ]
+    },
+    "symfony/validator": {
+        "version": "6.0",
+        "recipe": {
+            "repo": "github.com/symfony/recipes",
+            "branch": "main",
+            "version": "5.3",
+            "ref": "c32cfd98f714894c4f128bb99aa2530c1227603c"
+        },
+        "files": [
+            "config/packages/validator.yaml"
         ]
     },
     "symfony/var-dumper": {
