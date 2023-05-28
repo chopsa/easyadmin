@@ -12,8 +12,10 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextareaField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextEditorField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 
+#[IsGranted('ROLE_MODERATOR')]
 class QuestionCrudController extends AbstractCrudController
 {
     public static function getEntityFqcn(): string
@@ -47,8 +49,8 @@ class QuestionCrudController extends AbstractCrudController
                 ],
             ])
             ->setHelp('Preview:');
-        yield VotesField::new('votes', 'Total Votes');
-            // ->setTextAlign('right');
+        yield VotesField::new('votes', 'Total Votes')
+            ->setPermission('ROLE_SUPER_ADMIN');
         yield AssociationField::new('askedBy')
             ->autocomplete()
             ->formatValue(static function($value, Question $question) {
