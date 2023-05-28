@@ -6,15 +6,18 @@ use App\Entity\User;
 use App\Entity\Topic;
 use App\Entity\Answer;
 use App\Entity\Question;
+use Symfony\UX\Chartjs\Model\Chart;
+use App\Repository\QuestionRepository;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
-use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Assets;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\MenuItem;
 use EasyCorp\Bundle\EasyAdminBundle\Config\UserMenu;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Dashboard;
+use Symfony\UX\Chartjs\Builder\ChartBuilderInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGenerator;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
@@ -22,12 +25,30 @@ use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractDashboardController;
 
 class DashboardController extends AbstractDashboardController
 {
+    private QuestionRepository $questionRepository;
+    // private ChartBuilderInterface $chartBuilder;
+
+    public function __construct(QuestionRepository $questionRepository)
+    {
+        $this->questionRepository = $questionRepository;
+        // $this->chartBuilder = $chartBuilder;
+    }
+
     #[IsGranted('ROLE_ADMIN')]
     #[Route('/admin', name: 'admin')]
     public function index(): Response
     {
-        return $this->render('admin/index.html.twig');
+        $latestQuestions = $this->questionRepository
+            ->findLatest();
+        $topVoted = $this->questionRepository
+            ->findTopVoted();
         
+        return $this->render('admin/index.html.twig', [
+            'latestQuestions' => $latestQuestions,
+            'topVoted' => $topVoted,
+            // 'chart' => $this->createChart(),
+        ]);
+
         // return parent::index();
 
         // Option 1. You can make your dashboard redirect to some common page of your backend
@@ -105,4 +126,32 @@ class DashboardController extends AbstractDashboardController
                 'id' => 'DESC',
             ]);
     }
+
+    // private function createChart(): Chart
+    // {
+    //     $chart = $this->chartBuilder->createChart(Chart::TYPE_LINE);
+
+    //     $chart->setData([
+    //         'labels' => ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
+    //         'datasets' => [
+    //             [
+    //                 'label' => 'My First dataset',
+    //                 'backgroundColor' => 'rgb(255, 99, 132)',
+    //                 'borderColor' => 'rgb(255, 99, 132)',
+    //                 'data' => [0, 10, 5, 2, 20, 30, 45],
+    //             ],
+    //         ],
+    //     ]);
+
+    //     $chart->setOptions([
+    //         'scales' => [
+    //             'y' => [
+    //                 'suggestedMin' => 0,
+    //                 'suggestedMax' => 100,
+    //             ],
+    //         ],
+    //     ]);
+
+    //     return $chart;
+    // }
 }

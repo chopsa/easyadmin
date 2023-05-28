@@ -25,6 +25,7 @@
         "symfony/security-bundle": "6.0.*",
         "symfony/stopwatch": "6.0.*",
         "symfony/twig-bundle": "6.0.*",
+        "symfony/ux-chartjs": "^2.9",
         "symfony/webpack-encore-bundle": "^1.7",
         "symfony/yaml": "6.0.*",
         "twig/extra-bundle": "^2.12|^3.0",
