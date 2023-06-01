@@ -90,13 +90,15 @@ class QuestionCrudController extends AbstractCrudController
     public function configureActions(Actions $actions): Actions
     {
         return parent::configureActions($actions)
-        ->update(Crud::PAGE_INDEX, Action::DELETE, function(Action $action) {
-            $action->displayIf(static function(Question $question) {
-                return !$question->getIsApproved();
-            });
+        // ->update(Crud::PAGE_INDEX, Action::DELETE, function(Action $action) {
+        //     $action->displayIf(static function(Question $question) {
+        //         return !$question->getIsApproved();
 
-            return $action;
-        })
+        //     });
+
+        //     return $action;
+        // })
+            ->disable(Action::BATCH_DELETE)
             ->setPermission(Action::INDEX, 'ROLE_MODERATOR')
             ->setPermission(Action::DETAIL, 'ROLE_MODERATOR')
             ->setPermission(Action::EDIT, 'ROLE_MODERATOR')
@@ -126,15 +128,15 @@ class QuestionCrudController extends AbstractCrudController
         parent::updateEntity($entityManager, $entityInstance);
     }
 
-    /**
-     * @param Question $entityInstance
-     */
-    public function deleteEntity(EntityManagerInterface $entityManager, $entityInstance): void
-    {
-        if ($entityInstance->getIsApproved()) {
-            throw new \Exception('Deleting approved questions is forbidden');
-        }
+    // /**
+    //  * @param Question $entityInstance
+    //  */
+    // public function deleteEntity(EntityManagerInterface $entityManager, $entityInstance): void
+    // {
+    //     if ($entityInstance->getIsApproved()) {
+    //         throw new \Exception('Deleting approved questions is forbidden');
+    //     }
 
-        parent::deleteEntity($entityManager, $entityInstance);
-    }
+    //     parent::deleteEntity($entityManager, $entityInstance);
+    // }
 }
