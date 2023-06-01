@@ -98,6 +98,12 @@ class QuestionCrudController extends AbstractCrudController
             })
             ->setIcon('fa fa-eye')
             ->setLabel('View on site');
+        $approveAction = Action::new('approve')
+            ->addCssClass('btn btn-success')
+            ->setIcon('fa fa-check-circle')
+            ->displayAsButton()
+            ->setTemplatePath('admin/approve_action.html.twig')
+            ->linkToCrudAction('approve');
 
         return parent::configureActions($actions)
         // ->update(Crud::PAGE_INDEX, Action::DELETE, function(Action $action) {
@@ -116,7 +122,8 @@ class QuestionCrudController extends AbstractCrudController
             ->setPermission(Action::DELETE, 'ROLE_SUPER_ADMIN')
             ->setPermission(Action::BATCH_DELETE, 'ROLE_SUPER_ADMIN')
             ->add(Crud::PAGE_DETAIL, $viewAction->addCssClass('btn btn-success'))
-            ->add(Crud::PAGE_INDEX, $viewAction);
+            ->add(Crud::PAGE_INDEX, $viewAction)
+            ->add(Crud::PAGE_DETAIL, $approveAction);
     }
     
     public function configureFilters(Filters $filters): Filters
