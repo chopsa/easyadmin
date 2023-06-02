@@ -4,25 +4,38 @@ namespace App\Controller\Admin;
 
 use App\Entity\User;
 use App\Entity\Question;
+use App\Service\CsvExporter;
 use App\EasyAdmin\VotesField;
 use Doctrine\ORM\EntityManagerInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Field\Field;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
+use Symfony\Component\HttpFoundation\RequestStack;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextareaField;
 use EasyCorp\Bundle\EasyAdminBundle\Context\AdminContext;
+use EasyCorp\Bundle\EasyAdminBundle\Factory\FilterFactory;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextEditorField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGenerator;
+use EasyCorp\Bundle\EasyAdminBundle\Collection\FieldCollection;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 
 #[IsGranted('ROLE_MODERATOR')]
 class QuestionCrudController extends AbstractCrudController
 {
+    private AdminUrlGenerator $adminUrlGenerator;
+    private RequestStack $requestStack;
+
+    public function __construct(AdminUrlGenerator $adminUrlGenerator, RequestStack $requestStack)
+    {
+        $this->adminUrlGenerator = $adminUrlGenerator;
+        $this->requestStack = $requestStack;
+    }
+
     public static function getEntityFqcn(): string
     {
         return Question::class;
@@ -109,6 +122,18 @@ class QuestionCrudController extends AbstractCrudController
             ->displayIf(static function (Question $question): bool {
                 return !$question->getIsApproved();
             });
+        $exportAction = Action::new('export')
+            ->linkToUrl(function() {
+                $request = $this->requestStack->getCurrentRequest();
+
+                return $this->adminUrlGenerator
+                    ->setAll($request->query->all())
+                    ->setAction('export')
+                    ->generateUrl();
+            })
+            ->addCssClass('btn btn-success')
+            ->setIcon('fa fa-download')
+            ->createAsGlobalAction();
 
         return parent::configureActions($actions)
         // ->update(Crud::PAGE_INDEX, Action::DELETE, function(Action $action) {
@@ -128,7 +153,8 @@ class QuestionCrudController extends AbstractCrudController
             ->setPermission(Action::BATCH_DELETE, 'ROLE_SUPER_ADMIN')
             ->add(Crud::PAGE_DETAIL, $viewAction->addCssClass('btn btn-success'))
             ->add(Crud::PAGE_INDEX, $viewAction)
-            ->add(Crud::PAGE_DETAIL, $approveAction);
+            ->add(Crud::PAGE_DETAIL, $approveAction)
+            ->add(Crud::PAGE_INDEX, $exportAction);
     }
     
     public function configureFilters(Filters $filters): Filters
@@ -180,5 +206,19 @@ class QuestionCrudController extends AbstractCrudController
             ->generateUrl();
 
         return $this->redirect($targetUrl);
+    }
+
+    public function export(AdminContext $context, CsvExporter $csvExporter)
+    {
+        $fields = FieldCollection::new($this->configureFields(Crud::PAGE_INDEX));
+        // $context->getCrud()->setFieldAssets($this->getFieldAssets($fields));
+        $filters = $this->container->get(FilterFactory::class)->create($context->getCrud()->getFiltersConfig(), $fields, $context->getEntity());
+        $queryBuilder = $this->createIndexQueryBuilder($context->getSearch(), $context->getEntity(), $fields, $filters);
+    
+        return $csvExporter->createResponseFromQueryBuilder(
+            $queryBuilder,
+            $fields,
+            'questions.csv'
+        );
     }
 }

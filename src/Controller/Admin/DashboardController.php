@@ -103,7 +103,7 @@ class DashboardController extends AbstractDashboardController
                 MenuItem::linkToCrud('All', 'fa fa-list', Question::class)
                     ->setPermission('ROLE_MODERATOR')
                     ->setController(QuestionCrudController::class),
-                MenuItem::linkToCrud('Pending Approval', 'far fa-warning', Question::class)
+                MenuItem::linkToCrud('Pending Approval', 'fa fa-warning', Question::class)
                     ->setPermission('ROLE_MODERATOR')
                     ->setController(QuestionPendingApprovalCrudController::class),
         ]);
